@@ -15,9 +15,14 @@ ENV LC_ALL ja_JP.UTF-8
 # change TZ to Ja
 RUN ln -sf /usr/share/zoneinfo/Japan /etc/localtime
 
+RUN apt update && \
+	apt install -y git unzip libzip-dev libicu-dev libonig-dev && \
+	docker-php-ext-install intl pdo_mysql zip bcmath
+
+
+COPY ./build/app/php-apache/apache/default.conf /etc/apache2/sites-enabled/000-default.conf
+
 # install comporser
-RUN apt install -y curl git unzip
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html/
-RUN composer create-project laravel/laravel .
+WORKDIR /var/www/laravel
